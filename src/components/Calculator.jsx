@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-eval */
 /* eslint-disable no-extend-native */
 /* eslint-disable no-unused-vars */
@@ -15,8 +16,12 @@ export default (props) => {
   const [current, setCurrent] = useState(0);
 
   useEffect(() => {
-    console.log("chamando use effect");
-  }, [displayValue, clearDisplay, operation, values, current]);
+    const i = current;
+    const newValue = parseFloat(displayValue);
+    const _values = [...values];
+    _values[i] = newValue;
+    setValues(_values);
+  }, [displayValue]);
 
   function clearMemory() {
     setDisplayValue(0);
@@ -36,10 +41,14 @@ export default (props) => {
       const currentOperation = operation;
 
       const _values = [...values];
-      _values[0] = eval(`${values[0]} ${currentOperation} ${values[1]}`);
+      try {
+        _values[0] = eval(`${values[0]} ${currentOperation} ${values[1]}`);
+      } catch (error) {
+        _values[0] = values[0];
+      }
       _values[1] = 0;
 
-      setDisplayValue(values[0]);
+      setDisplayValue(_values[0]);
       setOperation(equals ? null : chooseOperation);
       setCurrent(equals ? 0 : 1);
       setClearDisplay(!equals);
@@ -58,15 +67,6 @@ export default (props) => {
 
     setDisplayValue(_displayValue);
     setClearDisplay(false);
-
-    if (n !== ".") {
-      const i = current;
-      const newValue = parseFloat(displayValue);
-      const _values = [...values];
-      _values[i] = newValue;
-      setValues(_values);
-      console.log(_values);
-    }
   }
 
   return (
